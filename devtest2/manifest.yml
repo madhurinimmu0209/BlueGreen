@@ -1,0 +1,5 @@
+applications:
+- name: devtest2-t
+  memory: 1216M
+  instances: 1
+  path: target/devtest2.war

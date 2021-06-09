@@ -1,0 +1,66 @@
+node(){
+  def ip_address=""
+stage ("checkout SCM")
+{ 
+  checkout scm
+}
+
+stage ("Build") {
+
+   def mvnHome = tool name: 'MAVEN_HOME', type: 'maven'
+   def directory = "devtest1"
+     
+     dir(directory) {
+       sh "${mvnHome}/bin/mvn package"
+     }
+     
+  
+
+  
+}
+
+stage ("Upload to S3") {
+  withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWSCreds', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+    s3Upload bucket: 'bucket1-madhu', file: '/var/lib/jenkins/workspace/PipelineDemo/devtest1/target/devtest1.war', path: 'project1/' 
+}
+}
+
+stage ("Download from S3") {
+
+ withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWSCreds', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+ s3Download bucket: 'bucket1-madhu', file: 'devtest1.war', force: true, path: 'project1/devtest1.war'
+ }
+  
+}
+
+stage("Create ec2 instance"){
+  withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWSCreds', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+   def directory = "terraform"
+
+     
+     dir(directory) {
+       sh "terraform init"
+	   sh "terraform apply -auto-approve"
+	   ip_address = sh(script: "terraform output ec2instance_ip", returnStdout: true).toString().trim()
+	   sh "echo ${ip_address}"
+     }
+     }
+
+}
+
+stage("configure httpd on ec2"){
+    def ansible_home = tool name: 'ansible_home', type: 'org.jenkinsci.plugins.ansible.AnsibleInstallation'
+   sh "echo ${ip_address}"
+withCredentials([sshUserPrivateKey(credentialsId: 'ec2-keypair', keyFileVariable: '', passphraseVariable: '', usernameVariable: '')]) {
+   def directory = "ansible"
+   dir(directory){
+   sh "${ansible_home}/ansible -m ping all -i ${ip_address} -i inventory.txt"
+   sh "${ansible_home}/ansible-playbook webserverconfig.yml -i  ${ip_address} -i inventory.txt"
+   }
+}
+
+
+}
+
+}
+ 

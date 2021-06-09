@@ -1,0 +1,43 @@
+app:
+  host: http://localhost
+  port: 8089
+  identity:
+    services.url: https://identitybts.webex.com
+    broker.url: https://idbrokerbts.webex.com
+    subscription.url: ${app.identity.services.url}/identity/config/v2/notification
+    user.scope: Identity:Config Identity:SCIM Identity:Organization cjp:user Identity:Notification
+  access:
+    token.uri: /idb/oauth2/v1/access_token
+    token.validate.uri: /idb/oauth2/v1/tokeninfo
+  revoke.token.uri: /idb/oauth2/v1/revoke
+  saml2.bearer.token.uri: /idb/token/v1/actions/GetBearerToken/invoke
+  resource:
+    id: Rf76492ad775814af9ee18d103219b30e2fca811ceb48b8f93577251691267f1b
+    secret: 6fb55f83fa02f472b68d22ad5021180461e2363e47f4b8f0d882db6c675aa40b
+  client:
+    id: Cb156047667962a2ac74db05d96280a82fd4a499e51395fe4ab8f779daff8c8e6
+    secret: d66a0ea97cc48fc6c58fd22336e24380b81ae4565fa5ab5144a231996e5916de
+    token.scope: Identity:SCIM Identity:OAuthKeyService Identity:Config
+  service.name: cjp-test
+  cjp:
+    service:
+      account.name: svc-cjp
+      account.key: QUXI.bchi.26.CVXH.vgwh.37.STZP.cykn.4568
+      test.account:
+        name: limitedLicenseUser
+        key: Very.Long.Pwd.ABBIIK.GHDDJ.1234567890.9387472294.Sep09.2018
+  callback:
+    url: https://user-service-eng001.broadcloudcc.com/users/notification
+    scope: Identity:Notification
+http:
+  pool:
+    max.connections: 30
+    max.connections.per.route: 15
+  connection:
+    timeout: 30
+    request:
+      timeout: 30
+  socket:
+    timeout: 30
+  max:
+    retries: 0

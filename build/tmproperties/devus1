@@ -1,0 +1,20 @@
+domain=devus1.ciscoccservice.com
+datacenter=devus1
+vault_cf_path=secret/devus1/cloudfoundry/tenantmanagement
+
+appname_prefix=green-
+
+cf_api_endpoint=https://api.$domain
+
+set -
+export VAULT_ADDR=https://consul.adminstaging.ciscoccservice.com:8200
+export VAULT_TLS_SERVER_NAME=consul.adminstaging.ciscoccservice.com
+export VAULT_TOKEN="$(~/.local/bin/vault write auth/$datacenter/approle/login role_id="$VAULT_TM_ROLE_ID" secret_id="$VAULT_TM_SECRET_ID" | grep -E '^token\s+' | awk '{print $2}')"
+cf_username="$(~/.local/bin/vault read -field=username $vault_cf_path)"
+cf_password="$(~/.local/bin/vault read -field=password $vault_cf_path)"
+
+set -xv
+cf_org=tenant-management
+cf_space=app
+
+buildpack_url=sunlight-java-buildpack

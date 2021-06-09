@@ -1,0 +1,42 @@
+app:
+  host: http://localhost
+  port: 8081
+  client:
+    id: Cb156047667962a2ac74db05d96280a82fd4a499e51395fe4ab8f779daff8c8e6
+    secret: d66a0ea97cc48fc6c58fd22336e24380b81ae4565fa5ab5144a231996e5916de
+    name: limitedLicenseUser
+    password: Very.Long.Pwd.ABBIIK.GHDDJ.1234567890.9387472294.Sep09.2018
+    token:
+      scope: Identity:SCIM Identity:Config cjp:organization
+  identity:
+    services:
+      url: https://identitybts.webex.com
+    broker:
+      url: https://idbrokerbts.webex.com
+  access:
+    token:
+      uri: /idb/oauth2/v1/access_token
+      validate:
+        uri: /idb/oauth2/v1/tokeninfo
+  revoke:
+    token:
+      uri: /idb/oauth2/v1/revoke
+  saml2:
+    bearer:
+      token:
+        uri: /idb/token/v2/actions/GetBearerToken/invoke
+  webexsquare:
+    billing:
+      scope : webexsquare:billing
+http:
+  pool:
+    max.connections: 30
+    max.connections.per.route: 15
+  connection:
+    timeout: 30
+    request:
+      timeout: 30
+  socket:
+    timeout: 30
+  max:
+    retries: 0
